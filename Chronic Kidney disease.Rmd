@@ -1,0 +1,354 @@
+---
+title: "CKD"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+library(readxl)
+
+main_data = read_excel("/Users/sujaikarunakaran/Desktop/Assignments/Spring 2020/Ranga/Chronic Kidney Disease/Chronic Kidney Disease Dataset.xlsx", sheet = 2)
+
+sum(is.na(main_data))
+
+str(main_data)
+
+main_data$CKD = as.factor(main_data$CKD)
+
+train_data$Racegrp = factor(train_data$Racegrp, level = c("white", "hispa", "black", "other"))
+
+##Chi square test between Racegroup and CKD
+table_Race = table(train_data$Racegrp, train_data$CKD)
+chisq.test(table_Race)
+
+#Chi square test between Racegroup and CKD
+main_data$Income = as.factor(main_data$Income)
+table_income = table(main_data$Income, main_data$CKD)
+chisq.test(table_income)
+
+#chi square test between gender and ckd - not significant
+
+main_data$Female = as.factor(main_data$Female)
+table_female = table(main_data$Female, main_data$CKD)
+chisq.test(table_female)
+
+
+#chi square test between education and ckd
+
+main_data$Educ = as.factor(main_data$Educ)
+table_Educ = table(main_data$Educ, main_data$CKD)
+chisq.test(table_Educ)
+
+#Chi square test between Unmarried & CKD
+main_data$Unmarried = as.factor(main_data$Unmarried)
+table_Unmarried = table(main_data$Unmarried, main_data$CKD)
+chisq.test(table_Unmarried)
+
+#Chi square test between Unmarried & CKD
+main_data$CareSource
+table_care = table(main_data$CareSource, main_data$CKD)
+
+chisq.test(table_care)
+
+#glm between bmi and CKD
+
+glmfit_bmi = glm(main_data$CKD~main_data$BMI, data = main_data, family = "binomial")
+
+summary(glmfit_bmi)
+
+exp(0.002806)
+
+(exp(-8.56840+(20*0.097)))/(1+(exp(-8.56840+(20*0.097))))
+(exp(-8.56840+(21*0.097)))/(1+(exp(-8.56840+(21*0.097))))
+(exp(-8.56840+(22*0.097)))/(1+(exp(-8.56840+(22*0.097))))
+(exp(-8.56840+(23*0.097)))/(1+(exp(-8.56840+(23*0.097))))
+(exp(-8.56840+(40*0.097)))/(1+(exp(-8.56840+(40*0.097))))
+(exp(-8.56840+(41*0.097)))/(1+(exp(-8.56840+(41*0.097))))
+(exp(-8.56840+(60*0.097)))/(1+(exp(-8.56840+(60*0.097))))
+(exp(-8.56840+(84*0.097)))/(1+(exp(-8.56840+(84*0.097))))
+(exp(-8.56840+(250*0.097)))/(1+(exp(-8.56840+(250*0.097))))
+
+
+(0.00132)/(1-0.00132)
+(0.001454)/(1-0.001454)
+
+0.0013217/0.00146
+
+glmfit_weight = glm(main_data$CKD~main_data$Weight, data = main_data, family = "binomial")
+
+summary(glmfit_weight)
+(exp(-2.7445939+(56*0.0008451)))/(1+(exp(-2.7445939+(56*0.0008451))))
+(exp(-2.7445939+(57*0.0008451)))/(1+(exp(-2.7445939+(57*0.0008451))))
+(exp(-2.7445939+(58*0.0008451)))/(1+(exp(-2.7445939+(58*0.0008451))))
+
+(0.063134)/(1-0.063134)
+(0.06318475)/(1-0.06318475)
+(0.06323479)/(1-0.06323479)
+#glm between height and CKD
+
+glmfit_height = glm(main_data$CKD~main_data$Height, data = main_data, family = "binomial")
+summary(glmfit_height)
+exp(-0.019312)
+
+##Chi square of fam hypertension vs ckd
+main_data$`Fam Hypertension`
+table(main_data$`Fam Hypertension`, main_data$CKD)
+
+chisq.test(table(main_data$`Fam CVD`, main_data$CKD))
+
+#glm between waist and CKD
+
+glmfit_waist = glm(main_data$CKD~main_data$`Total Chol`, data = main_data, family = "binomial")
+summary(glmfit_waist)
+exp(-0.019312)
+
+str(train_data)
+
+train_data = subset(main_data, select = -c(Weight,BMI,Female,Dyslipidemia,Obese))
+
+train_data = train_data[,-14]
+train_data = train_data[,-21]
+
+
+x = exp(0.35)/(1+(exp(0.35)))
+x
+
+str(train_data)
+
+hist(train_data$Age)
+
+summary(train_data$Age)
+
+
+train_data$Age = as.integer(train_data$Age)
+
+
+glmfit_age = glm(main_data$CKD~main_data$Age, data = main_data, family = "binomial")
+summary(glmfit_age)
+
+```
+
+
+```{r}
+
+
+str(train_data)
+
+train_data$CareSource = as.factor(train_data$CareSource)
+train_data$Insured = as.factor(train_data$Insured)
+train_data$PVD = as.factor(train_data$PVD)
+train_data$Activity = as.factor(train_data$Activity)
+train_data$Age = as.integer(train_data$Age)
+train_data[,!colnames(train_data) %in% c('Age','Racegrp','Height','BMI','Waist','SBP','DBP','HDL','LDL')]=lapply(train_data[,!colnames(train_data) %in% c('Age','Racegrp','Height','BMI','Waist','SBP','DBP','HDL','LDL')],as.factor)
+
+str(train_data)
+summary(train_data$Age)
+
+```
+
+
+```{r}
+
+
+set.seed(2)
+indx = sample(2, nrow(train_data), replace = T, prob = c(0.8, 0.2))
+
+train = train_data[indx == 1,]
+test = train_data[indx == 2,]
+
+
+train1 = subset(train, select = c(Age,Racegrp,HDL,PVD,Hypertension,Diabetes,Anemia,CKD))
+test1 = subset(test, select = c(Age,Racegrp,HDL,PVD,Hypertension,Diabetes,Anemia,CKD))
+
+model_glm1 = glm(train$CKD~., data = train, family = "binomial")
+
+summary(model_glm1)
+
+library(stargazer)
+stargazer(model_glm1, type="html", out="multi1.htm")
+
+prob_pred_1 = predict.glm(model_glm1, test, type = "response")
+
+
+library(InformationValue)
+optCutOff_1 = optimalCutoff(test$CKD, prob_pred_1)[1] 
+
+misClassError(test$CKD, prob_pred_1, threshold = optCutOff_1)
+
+plotROC(test$CKD, prob_pred_1)
+
+```
+
+
+```{r}
+
+str(train1)
+
+model_glm2 = glm(train1$CKD~., data = train1, family = "binomial")
+
+summary(model_glm2)
+
+library(ROCR)
+prob_pred_2 = predict.glm(model_glm2, test1, type = "response")
+
+prob_pred_train = predict.glm(model_glm2, train1, type = "response")
+
+predict_2 = prediction(prob_pred_2, test1$CKD)
+
+predicted_class_2 = ifelse(prob_pred_2 > 0.0620022, 1, 0)
+
+predicted_class_train = ifelse(prob_pred_train > optCutOff_2, 1, 0)
+
+confusionMatrix(factor(predicted_class_2), test1$CKD, positive = "1")
+
+confusionMatrix(factor(predicted_class_train), train1$CKD, positive = "1")
+
+predict_2 = prediction(prob_pred_2, test1$CKD)
+perf = performance(predict_2, "tpr", "fpr")
+
+plot(perf, col = "red", lty = 3, lwd = 3)
+
+opt.cut = function(perf, predict_2){
+  cut.ind = mapply(FUN=function(x, y, p){
+    d = (x - 0)^2 + (y-1)^2 
+    ind = which(d == min(d))
+    c(sensitivity = y[[ind]], specificity = 1-x[[ind]], 
+    cutoff = p[[ind]])}, perf@x.values, perf@y.values, predict_2@cutoffs)}
+
+print(opt.cut(perf, predict_2))
+
+
+library(InformationValue)
+optCutOff_2 = optimalCutoff(test1$CKD, prob_pred_2)[1] 
+
+misClassError(test1$CKD, prob_pred_2, threshold = optCutOff_2)
+
+plotROC(test1$CKD, prob_pred_2)
+
+library(ROCR)
+library(broom)
+library(caret)
+library(tidyr)
+library(dplyr)
+library(scales)
+library(ggplot2)
+library(ggthemes)
+library(gridExtra)
+
+cm_info <- ConfusionMatrixInfo( data = test1, predict = "prediction", actual = "left", cutoff = .6 )
+ggthemr("flat")
+cm_info$plot
+
+
+library(ggplot2)
+cost_fp <- 100
+cost_fn <- 200
+roc_info <- ROCInfo( data = cm_info$data, predict = "predict", actual = "actual", cost.fp = cost_fp, cost.fn = cost_fn )
+grid.draw(roc_info$plot)
+
+
+```
+
+
+```{r}
+
+
+main_test = read_excel("/Users/sujaikarunakaran/Desktop/Assignments/Spring 2020/Ranga/Chronic Kidney Disease/Test.xlsx")
+
+test_data = subset(main_test, select = -c(Weight,BMI,Female,Dyslipidemia,Obese))
+
+test_data = test_data[,-14]
+test_data = test_data[,-21]
+
+sum(is.na(test_data))
+test_data = na.omit(test_data)
+
+test_data1 = subset(test_data, select = c(Age, Racegrp, HDL, PVD, Hypertension, Diabetes, Anemia))
+test_data$Racegrp = factor(test_data$Racegrp, level = c("white", "hispa", "black", "other"))
+
+str(test_data1)
+
+test_data$Age = as.integer(test_data$Age)
+test_data[,!colnames(test_data) %in% c('Age','Racegrp','Height','BMI','Waist','SBP','DBP','HDL','LDL')]=lapply(test_data[,!colnames(test_data) %in% c('Age','Racegrp','Height','BMI','Waist','SBP','DBP','HDL','LDL')],as.factor)
+
+str(test_data)
+str(test_data1)
+
+sum(is.na(test_data1))
+
+```
+
+
+
+```{r}
+
+prob_pred_test = predict.glm(model_glm2, test_data1, type = "response")
+
+
+predicted_class = ifelse(prob_pred_test > 0.06200222, 1, 0)
+
+table(predicted_class)
+
+summary(predicted_class)
+str(predicted_class)
+
+library(InformationValue)
+optCutOff = optimalCutoff(train_data$CKD, prob_pred)[1] 
+
+misClassError(train_data$CKD, prob_pred_test, threshold = optCutOff_2)
+
+plotROC(train_data$CKD, prob_pred)
+
+exp(-7.346551+(0.0909*84)-1.177244-0.02309+0.462939+0.4952)/(1+(exp(-7.346551+(0.0909*84)-1.177244-0.02309+0.462939+0.4952)))
+
+```
+
+
+
+```{r}
+
+sum(is.na(main_data))
+
+main_data = na.omit(main_data)
+
+main_data$Racegrp = factor(main_data$Racegrp, level = c("white", "hispa", "black", "other"))
+
+main_data$Age = as.integer(main_data$Age)
+main_data[,!colnames(main_data) %in% c('Age','Racegrp','Height','BMI','Waist','SBP','DBP','HDL','LDL', 'Weight', 'Total Chol')]=lapply(main_data[,!colnames(main_data) %in% c('Age','Racegrp','Height','BMI','Waist','SBP','DBP','HDL','LDL', 'Weight', 'Total Chol')],as.factor)
+
+str(main_data)
+
+
+set.seed(2)
+indx = sample(2, nrow(main_data), replace = T, prob = c(0.8, 0.2))
+
+train = main_data[indx == 1,]
+test = main_data[indx == 2,]
+
+
+train1 = subset(train, select = c(Age,Racegrp,HDL,LDL,PVD,Hypertension,Diabetes,Anemia,CKD))
+test1 = subset(test, select = c(Age,Racegrp,HDL,LDL,PVD,Hypertension,Diabetes,Anemia,CKD))
+
+model_glm3 = glm(train$CKD~., data = train, family = "binomial")
+
+summary(model_glm3)
+
+library(stargazer)
+stargazer(model_glm1, type="html", out="multi1.htm")
+
+prob_pred_3 = predict.glm(model_glm3, test, type = "response")
+
+
+library(InformationValue)
+optCutOff_3 = optimalCutoff(test$CKD, prob_pred_3)[1] 
+
+misClassError(test$CKD, prob_pred_3, threshold = optCutOff_3)
+
+plotROC(test$CKD, prob_pred_3)
+
+```
+
